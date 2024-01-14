@@ -28,7 +28,6 @@ RUN export FLASK_APP=core/server.py
 # Set the environment variable for Flask
 ENV FLASK_APP=core/server.py
 
-# the Gunicron thingy
 
 # Make port 7755 available to the world outside this container
 EXPOSE 7755
@@ -37,11 +36,3 @@ EXPOSE 7755
 # Run app.py when the container launches
 CMD ["bash", "run.sh"]
 
-
-##Commands to run the docker image.
-
-# docker build -t testapp . 
-# docker run -p 7755:7755 testapp   
-# docker run testapp /bin/bash -c "pytest -vvv -s tests/"
-# docker run testapp /bin/bash -c "pytest --cov"
-# docker run -it testapp /bin/bash -c "export FLASK_APP=core/server.py && rm core/store.sqlite3 && flask db upgrade -d core/migrations/"

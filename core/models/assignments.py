@@ -67,10 +67,8 @@ class Assignment(db.Model):
         assertions.assert_valid(assignment.content is not None, 'assignment with empty content cannot be submitted')
 
         assignment.teacher_id = teacher_id
-        #here after hitting the endpoint the state of the assignment was not getting changed so i added this line
         assignment.state='SUBMITTED'
         db.session.flush()
-
         return assignment
 
 
@@ -79,7 +77,6 @@ class Assignment(db.Model):
         assignment = Assignment.get_by_id(_id)
         assertions.assert_found(assignment, 'No assignment with this id was found')
         assertions.assert_valid(grade is not None, 'assignment with empty grade cannot be graded')
-
         assignment.grade = grade
         assignment.state = AssignmentStateEnum.GRADED
         db.session.flush()
