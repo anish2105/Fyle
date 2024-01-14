@@ -3,7 +3,7 @@ from core import db
 from core.apis import decorators
 from core.apis.responses import APIResponse
 from core.models.assignments import Assignment
-
+from core.libs.exceptions import FyleError
 from .schema import AssignmentSchema, AssignmentSubmitSchema
 student_assignments_resources = Blueprint('student_assignments_resources', __name__)
 
@@ -22,9 +22,11 @@ def list_assignments(p):
 @decorators.authenticate_principal
 def upsert_assignment(p, incoming_payload):
     """Create or Edit an assignment"""
-    assignment = AssignmentSchema().load(incoming_payload)
+    try:
+        assignment = AssignmentSchema().load(incoming_payload)
+    except:
+        raise FyleError(status_code=400,message="Content cannot be null")
     assignment.student_id = p.student_id
-
     upserted_assignment = Assignment.upsert(assignment)
     db.session.commit()
     upserted_assignment_dump = AssignmentSchema().dump(upserted_assignment)
@@ -36,6 +38,9 @@ def upsert_assignment(p, incoming_payload):
 @decorators.authenticate_principal
 def submit_assignment(p, incoming_payload):
     """Submit an assignment"""
+    get_assignment=Assignment.get_by_id(incoming_payload["id"])
+    if get_assignment.state=='SUBMITTED' or get_assignment.state=='GRADED':
+        raise FyleError(status_code=400,message='only a draft assignment can be submitted')
     submit_assignment_payload = AssignmentSubmitSchema().load(incoming_payload)
 
     submitted_assignment = Assignment.submit(

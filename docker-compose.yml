@@ -1,0 +1,9 @@
+version: '3'
+services:
+  testapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "7755:7755"
+    command: ["bash", "run.sh"]
